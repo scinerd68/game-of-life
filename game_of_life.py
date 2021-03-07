@@ -23,7 +23,7 @@ class State:
             self.state[x_mid, y_mid - i] = 1
             self.state[x_mid, y_mid + i] = 1
 
-        if self.block_length // 2 == 0:
+        if self.block_length % 2 == 0:
             self.state[x_mid, y_mid - half_length] = 0
 
     def next_state(self):
@@ -84,7 +84,7 @@ class State:
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 1, 1)
 
-generation = State(5)
+generation = State(8)
 generation.initial_state()
 
 
