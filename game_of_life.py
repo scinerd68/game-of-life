@@ -4,32 +4,24 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 
-NUM_ROWS = 20
-NUM_COLS = 20
-MIDDLE = (NUM_ROWS // 2, NUM_COLS // 2)
-
-
 class State:
-    def __init__(self, block_length=3):
-        self.state = np.zeros((NUM_ROWS, NUM_COLS))
-        self.block_length = block_length
+    def __init__(self, block_size=(5, 5), random=True):
+        self.state = np.zeros(block_size)
+        self.block_size = block_size
+        self.random = random
 
     def initial_state(self):
-        x_mid, y_mid = MIDDLE
-        self.state[MIDDLE] = 1
-        half_length = self.block_length // 2
-
-        for i in range(1, half_length + 1):
-            self.state[x_mid, y_mid - i] = 1
-            self.state[x_mid, y_mid + i] = 1
-
-        if self.block_length % 2 == 0:
-            self.state[x_mid, y_mid - half_length] = 0
+        if self.random:
+            proba_0 = 0.5
+            initial_block = np.random.choice([0, 1], size=self.block_size, p=[proba_0, 1-proba_0])
+        else:
+            initial_block=np.ones(self.block_size)
+        self.state = np.pad(initial_block, pad_width=(self.block_size, self.block_size), mode='constant', constant_values=0)
 
     def next_state(self):
         next_state = np.copy(self.state)
-        for x in range(NUM_ROWS):
-            for y in range(NUM_COLS):
+        for x in range(self.state.shape[0]):
+            for y in range(self.state.shape[1]):
                 if not self.survive((x, y)):
                     next_state[x, y] = 0
                 if self.born((x, y)):
@@ -58,20 +50,20 @@ class State:
             neighbors.append((x - 1, y))
             if y - 1 >= 0:
                 neighbors.append((x - 1, y - 1))
-            if y + 1 < NUM_COLS:
+            if y + 1 < self.state.shape[1]:
                 neighbors.append((x - 1, y + 1))
         
-        if x + 1 < NUM_ROWS:
+        if x + 1 < self.state.shape[0]:
             neighbors.append((x + 1, y))
             if y - 1 >= 0:
                 neighbors.append((x + 1, y - 1))
-            if y + 1 < NUM_COLS:
+            if y + 1 < self.state.shape[1]:
                 neighbors.append((x + 1, y + 1))
 
         if y - 1 >= 0:
             neighbors.append((x, y - 1))
         
-        if y + 1 < NUM_COLS:
+        if y + 1 < self.state.shape[1]:
             neighbors.append((x, y + 1))
 
         for pos in neighbors:
@@ -84,7 +76,7 @@ class State:
 fig = plt.figure()
 ax1 = fig.add_subplot(1, 1, 1)
 
-generation = State(8)
+generation = State()
 generation.initial_state()
 
 
