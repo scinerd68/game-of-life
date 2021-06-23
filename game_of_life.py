@@ -16,7 +16,8 @@ class State:
             initial_block = np.random.choice([0, 1], size=self.block_size, p=[proba_0, 1-proba_0])
         else:
             initial_block=np.ones(self.block_size)
-        self.state = np.pad(initial_block, pad_width=(self.block_size, self.block_size), mode='constant', constant_values=0)
+        padding = 2 * max(self.block_size)
+        self.state = np.pad(initial_block, pad_width=((padding, padding), (padding, padding)), mode='constant', constant_values=0)
 
     def next_state(self):
         next_state = np.copy(self.state)
